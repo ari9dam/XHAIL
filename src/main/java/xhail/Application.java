@@ -145,7 +145,6 @@ public class Application implements Callable<Answers> {
 						builder.addSource(args[i]);
 				}
 		Config config = builder.build();
-
 		Application application = new Application(config);
 		application.execute();
 	}
@@ -153,11 +152,10 @@ public class Application implements Callable<Answers> {
 	private final Config config;
 
 	private final Problem problem;
-
-	private Application(Config config) {
+	
+	private void test(Config config){
 		if (null == config)
 			throw new IllegalArgumentException("Illegal 'config' argument in Application(Config): " + config);
-		this.config = config;
 
 		if (config.isHelp())
 			Logger.help();
@@ -193,10 +191,14 @@ public class Application implements Callable<Answers> {
 			}
 		}
 
+	}
+	public Application(Config config) {
+		test(config);
+		this.config = config;
 		Problem.Builder problem = new Problem.Builder(config);
 		if (config.hasSources())
 			for (Path path : config.getSources()) {
-				Logger.message(String.format("Reading from '%s'...", path.toString()));
+				//Logger.message(String.format("Reading from '%s'...", path.toString()));
 				problem.parse(path);
 			}
 		else {
@@ -209,10 +211,13 @@ public class Application implements Callable<Answers> {
 
 	@Override
 	public Answers call() throws Exception {
-		Logger.message("\nSolving...\n");
+		//Logger.message("\nSolving...\n");
 		return problem.solve();
 	}
-
+	
+	public Problem getProblem(){
+		return this.problem;
+	}
 	/**
 	 * 
 	 */
@@ -220,26 +225,6 @@ public class Application implements Callable<Answers> {
 		if (config.isPrettify()) {
 			System.out.println();
 			Utils.dump(problem, System.err);
-			// int index = config.getIndex();
-			// switch (index) {
-			// case -1:
-			// Utils.dump(problem, System.err);
-			// break;
-			// case 0:
-			// Utils.save(problem, System.err);
-			// break;
-			// default:
-			// Dialler dialer = new Dialler.Builder(config, problem).build();
-			// String[] outputs = dialer.execute().getValue().toArray(new
-			// String[0]);
-			// if (index <= outputs.length)
-			// Utils.save(new
-			// Grounding.Builder(problem).addAtoms(Parser.parseAnswer(outputs[index
-			// - 1])).build(), System.err);
-			// else
-			// Logger.message(String.format("*** Info  (%s): no such inductive phase for this problem",
-			// Logger.SIGNATURE));
-			// }
 		} else {
 			long kill = config.getKill();
 			try {

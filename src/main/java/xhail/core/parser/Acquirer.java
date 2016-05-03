@@ -32,6 +32,8 @@ public class Acquirer {
 
 	private static final String UNSATISFIABLE = "UNSATISFIABLE";
 
+	private static final String MODELS = "Models";
+
 	public static Acquirer from(InputStream stream) {
 		if (null == stream)
 			throw new IllegalArgumentException("Illegal 'stream' argument in Acquirer.from(InputStream): " + stream);
@@ -47,7 +49,7 @@ public class Acquirer {
 	private Tokeniser tokeniser;
 
 	private Values values = new Values();
-	
+
 	private Acquirer(Tokeniser tokeniser) {
 		if (null == tokeniser)
 			throw new IllegalArgumentException("Illegal 'tokeniser' argument in Acquirer(Tokeniser): " + tokeniser);
@@ -73,6 +75,7 @@ public class Acquirer {
 				parseUNSATISFIABLE();
 			else
 				parseAnswer();
+			parseModels();
 			parseEOF();
 		} catch (ParserErrorException e) {
 			Logger.error(e.getMessage());
@@ -81,12 +84,22 @@ public class Acquirer {
 		return new SimpleEntry<Values, Collection<Collection<String>>>(this.values, this.answers);
 	}
 
+	private void parseModels() throws ParserErrorException{
+		if(null ==token)
+			return;
+		if(MODELS.equals(token)){
+			while(null!=token){
+				token = tokeniser.next();
+			}
+		}
+	}
+
 	private void parseAnswer() throws ParserErrorException {
 		if (null == token)
-			throw new ParserErrorException("expected ATOM but EOF found");
-//		if (FOUND.equals(token) || OPTIMIZATION.equals(token) || OPTIMUM.equals(token) || SATISFIABLE.equals(token) || UNKNOWN.equals(token)
-//				|| UNSATISFIABLE.equals(token))
-//			throw new ParserErrorException(String.format("expected ATOM but '%s' found", token));
+			return;//throw new ParserErrorException("expected ATOM but EOF found");
+		//		if (FOUND.equals(token) || OPTIMIZATION.equals(token) || OPTIMUM.equals(token) || SATISFIABLE.equals(token) || UNKNOWN.equals(token)
+		//				|| UNSATISFIABLE.equals(token))
+		//			throw new ParserErrorException(String.format("expected ATOM but '%s' found", token));
 		this.atoms = new HashSet<>();
 		while (null != token && !FOUND.equals(token) && !OPTIMIZATION.equals(token) && !OPTIMUM.equals(token) && !SATISFIABLE.equals(token)
 				&& !UNKNOWN.equals(token) && !UNSATISFIABLE.equals(token)) {
@@ -118,9 +131,9 @@ public class Acquirer {
 	private void parseNested() throws ParserErrorException {
 		if (null == token)
 			throw new ParserErrorException("expected ATOM but EOF found");
-//		if (FOUND.equals(token) || OPTIMIZATION.equals(token) || OPTIMUM.equals(token) || SATISFIABLE.equals(token) || UNKNOWN.equals(token)
-//				|| UNSATISFIABLE.equals(token))
-//			throw new ParserErrorException(String.format("expected ATOM but '%s' found", token));
+		//		if (FOUND.equals(token) || OPTIMIZATION.equals(token) || OPTIMUM.equals(token) || SATISFIABLE.equals(token) || UNKNOWN.equals(token)
+		//				|| UNSATISFIABLE.equals(token))
+		//			throw new ParserErrorException(String.format("expected ATOM but '%s' found", token));
 		this.atoms = new HashSet<>();
 		while (null != token && !FOUND.equals(token) && !OPTIMIZATION.equals(token) && !OPTIMUM.equals(token) && !SATISFIABLE.equals(token)
 				&& !UNKNOWN.equals(token) && !UNSATISFIABLE.equals(token)) {
@@ -184,6 +197,9 @@ public class Acquirer {
 			token = tokeniser.next();
 		}
 		Values found = new Values(values);
+		if(found.matches("11")){
+			System.out.print("");
+		}
 		int order = found.compareTo(this.values);
 		if (order < 0) {
 			answers.clear();

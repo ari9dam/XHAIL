@@ -1,0 +1,75 @@
+#hide.
+#show abduced_initiatedAt/2.
+#show arg1/1.
+#show arg2/1.
+#show happensAt/2.
+#show holdsAt/2.
+#show id/1.
+#show initiatedAt/2.
+#show label/2.
+#show time/1.
+
+%%% B. Background
+time(1..15).
+id(id1;id2;id3;id4;id5).
+arg2(hallway;garden;office;kitchen;bathroom;bedroom).
+arg1(daniel;sandra;mary;john).
+fluent(location(X,Y)):-arg1(X),arg2(Y).
+fluent(coref(X,Y)):-id(X),arg1(Y).
+label(id1,1).
+label(id2,4).
+label(id3,7).
+label(id4,10).
+label(id5,13).
+holdsAt(F,T+1):-fluent(F),time(T),initiatedAt(F,T).
+holdsAt(F,T+1):-fluent(F),time(T),holdsAt(F,T),not terminatedAt(F,T).
+terminatedAt(location(V1,V2),V3):-happensAt(travel(V1,V4),V3),arg1(V1),arg2(V4),time(V3),arg2(V2).
+initiatedAt(location(V1,V2),V3):-happensAt(travel(V1,V2),V3),arg1(V1),arg2(V2),time(V3).
+terminatedAt(location(V1,V2),V3):-happensAt(go(V1,V4),V3),arg1(V1),arg2(V4),time(V3),arg2(V2).
+initiatedAt(location(V1,V2),V3):-happensAt(go(V1,V2),V3),arg1(V1),arg2(V2),time(V3).
+terminatedAt(location(V1,V2),V3):-happensAt(go_back(V1,V4),V3),arg1(V1),arg2(V4),time(V3),arg2(V2).
+initiatedAt(location(V1,V2),V3):-happensAt(go_back(V1,V2),V3),arg1(V1),arg2(V2),time(V3).
+terminatedAt(location(V1,V2),V3):-happensAt(move(V1,V4),V3),arg1(V1),arg2(V4),time(V3),arg2(V2).
+initiatedAt(location(V1,V2),V3):-happensAt(move(V1,V2),V3),arg1(V1),arg2(V2),time(V3).
+terminatedAt(location(V1,V2),V3):-happensAt(journey(V1,V4),V3),arg1(V1),arg2(V4),time(V3),arg2(V2).
+initiatedAt(location(V1,V2),V3):-happensAt(journey(V1,V2),V3),arg1(V1),arg2(V2),time(V3).
+happensAt(go(mary,bathroom),1).
+happensAt(go(daniel,bathroom),1).
+happensAt(journey(X,hallway),2):-holdsAt(coref(id1,X),2),arg1(X).
+happensAt(move(sandra,kitchen),4).
+happensAt(move(john,kitchen),4).
+happensAt(go(X,hallway),5):-holdsAt(coref(id2,X),5),arg1(X).
+happensAt(journey(sandra,office),7).
+happensAt(journey(daniel,office),7).
+happensAt(move(X,bedroom),8):-holdsAt(coref(id3,X),8),arg1(X).
+happensAt(journey(mary,office),10).
+happensAt(journey(daniel,office),10).
+happensAt(move(X,hallway),11):-holdsAt(coref(id4,X),11),arg1(X).
+happensAt(journey(mary,office),13).
+happensAt(journey(daniel,office),13).
+happensAt(move(X,bathroom),14):-holdsAt(coref(id5,X),14),arg1(X).
+:-initiatedAt(coref(X,Y),T),label(X,Z),T<Z.
+
+%%% E. Examples
+% #example holdsAt(location(daniel,hallway),3).
+
+:-not holdsAt(location(daniel,hallway),3).
+% #example holdsAt(location(john,hallway),6).
+
+:-not holdsAt(location(john,hallway),6).
+% #example holdsAt(location(john,hallway),9).
+
+:-not holdsAt(location(john,hallway),9).
+% #example holdsAt(location(sandra,bedroom),12).
+
+:-not holdsAt(location(sandra,bedroom),12).
+% #example holdsAt(location(mary,bathroom),15).
+
+:-not holdsAt(location(mary,bathroom),15).
+
+%%% I. Inflation
+% #modeh initiatedAt(coref(+id,+arg1),+time).
+0 { abduced_initiatedAt(coref(V1,V2),V3) :id(V1) :arg1(V2) :time(V3) } 2147483647.
+#minimize[ abduced_initiatedAt(coref(V1,V2),V3) =1 @1 :id(V1) :arg1(V2) :time(V3) ].
+initiatedAt(coref(V1,V2),V3):-abduced_initiatedAt(coref(V1,V2),V3),id(V1),arg1(V2),time(V3).
+

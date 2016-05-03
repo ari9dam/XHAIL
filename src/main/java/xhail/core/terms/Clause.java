@@ -31,7 +31,7 @@ public class Clause implements Iterable<Literal> {
 			body.add(literal);
 			return this;
 		}
-
+		
 		public Builder addLiterals(Collection<Literal> literals) {
 			if (null == literals)
 				throw new IllegalArgumentException("Illegal 'literals' argument in Clause.Builder.addLiteral(Collection<Literal>): " + literals);

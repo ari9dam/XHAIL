@@ -142,6 +142,7 @@ public interface SchemeTerm {
 			if (null != output) {
 				matches.add(atom);
 				outputs.addAll(output);
+				substitutes.addAll(output);
 			}
 		}
 		return new SimpleEntry<Collection<Atom>, Collection<Term>>(matches, outputs);
@@ -177,6 +178,19 @@ public interface SchemeTerm {
 					if (!substitutes.contains(atom.getTerm(i)))
 						return null;
 				} else if (Type.OUTPUT == placemarker.getType())
+					if(placemarker.getIdentifier().equalsIgnoreCase("time")){
+						int maxTime = 0;
+						for(Term t: substitutes){
+							if(t.toString().matches("^[0-9]+$")){
+								int v = Integer.parseInt(t.toString());
+								if(v>maxTime)
+									maxTime = v;
+							}
+						}
+						int atomVal = Integer.parseInt(atom.getTerm(i).toString());
+						if(atomVal>(maxTime+2))
+							return null;
+					}
 					result.add(atom.getTerm(i));
 			} else if (schemeterm instanceof Scheme) {
 				Term term = atom.getTerm(i);

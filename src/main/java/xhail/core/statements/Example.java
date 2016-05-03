@@ -174,6 +174,7 @@ public class Example {
 		String[] result = new String[defeasible ? 2 : 3];
 		result[0] = String.format("%% %s", toString());
 		result[1] = String.format("#maximize[ %s%s =%d @%d ].", yes, atom, weight, priority);
+		result[1] = "";
 		if (!defeasible)
 			result[2] = String.format(":-%s%s.", not, atom);
 //		result[result.length - 2] = String.format("covered_example(%s,%s):-%s%s.", bool, atom, yes, atom);

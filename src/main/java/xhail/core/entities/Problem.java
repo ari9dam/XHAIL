@@ -511,7 +511,7 @@ public class Problem implements Solvable {
 					}
 					Set<Clause> generalisation = new HashSet<Clause>();
 					Collections.addAll(generalisation, grounding.getGeneralisation());
-					if (!generalisations.contains(generalisation)) {
+					if (!generalisations.contains(generalisation)) {//
 						values = grounding.solve(values, builder);
 						// always add refinements, hopefully it won't be used!
 						refinements.add(grounding.asBadSolution());

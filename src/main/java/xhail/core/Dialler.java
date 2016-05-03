@@ -36,7 +36,6 @@ public class Dialler {
 		private Path source = null;
 		private Path target = null;
 		private Values values;
-
 		public Builder(Config config, Grounding grounding) {
 			if (null == config)
 				throw new IllegalArgumentException("Illegal 'config' argument in Dialler.Builder(Config, Grounding): " + config);
@@ -102,6 +101,8 @@ public class Dialler {
 
 	private final String[] gringo;
 
+	private final String[] clingo;
+
 	private final Path middle;
 
 	private final boolean mute;
@@ -124,6 +125,9 @@ public class Dialler {
 		this.clasp[1] = builder.middle.toAbsolutePath().toString();
 		this.clasp[2] = "--verbose=0";
 		this.clasp[3] = "--opt-mode=optN";
+		this.clingo = new String[2];
+		clingo[0] = "C:\\Users\\Arindam\\Downloads\\clingo-3.0.5-win64\\clingo.exe";
+		clingo[1] = builder.source.toAbsolutePath().toString();
 		if (null != builder.values)
 			this.clasp[4] = "--opt-bound=" + builder.values.toString();
 		this.debug = builder.config.isDebug();
